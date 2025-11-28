@@ -175,7 +175,7 @@ export const useMoonStore = defineStore('moon', () => {
       // Update days until next full moon
       const diffTime = nextFullMoonDate.getTime() - targetDate.getTime();
       daysUntilNextFullMoon.value = Number((diffTime / (1000 * 60 * 60 * 24)).toFixed(1));
-      console.log(phaseNum);
+      // console.log(phaseNum);
       // Set phase name based on phase value (0-1)
       if (phaseNum < 0.03 || phaseNum > 0.97) {
         phaseName.value = 'New Moon';

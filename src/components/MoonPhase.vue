@@ -16,10 +16,8 @@
             &lt; Prev
           </v-btn>
           
-          <!-- Moon Image -->
-          <div class="moon-phase-display">
-            <div class="moon-phase" :phase="moonStore.phaseName"></div>
-          </div>
+          <!-- Moon Image Component -->
+          <MoonImage />
           
           <!-- Next Button -->
           <v-btn 
@@ -63,9 +61,13 @@
                   <span>Moon Age:</span>
                   <span class="font-weight-medium">{{ moonStore.ageOfMoon ? moonStore.ageOfMoon + ' days' : '--' }}</span>
                 </div>
-                <div class="d-flex justify-space-between">
+                <div class="d-flex justify-space-between mb-2">
                   <span>Distance:</span>
                   <span class="font-weight-medium">{{ moonStore.distance ? Math.round(moonStore.distance).toLocaleString() + ' km' : '--' }}</span>
+                </div>
+                <div class="d-flex justify-space-between">
+                  <span>parallacticAngle:</span>
+                  <span class="font-weight-medium">{{ moonStore.moonPosition ? moonStore.moonPosition?.parallacticAngle : '--' }}</span>
                 </div>
               </v-card-text>
             </v-card>
@@ -111,7 +113,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick } from 'vue';
+import { ref, onMounted, watch } from 'vue';
+import MoonImage from './MoonImage.vue';
 import { useMoonStore } from '../store/moon';
 
 const moonStore = useMoonStore();
@@ -119,9 +122,6 @@ const loading = ref(false);
 const componentKey = ref(0);
 
 console.log(moonStore);
-
-// Moon phase image (using local file from public directory)
-const moonPhaseImage = '/images/moon-phases.png';
 
 const changeDate = async (days: number) => {
   try {
@@ -138,8 +138,9 @@ const changeDate = async (days: number) => {
     await moonStore.setCurrentDate(targetDate);
     
     // Force a re-render by updating the key
-    await nextTick();
-    componentKey.value++;
+    /*await watch(() => {
+      componentKey.value++;
+    });*/
     
   } catch (error) {
     console.error('Error changing date:', error);
@@ -180,116 +181,5 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.moon-phase-display {
-  position: relative;
-  width: 200px;
-  height: 200px;
-  margin: 0 auto;
-  margin: 20px auto;
-  border-radius: 50%;
-  overflow: hidden;
-  background: transparent;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
-}
-
-.moon-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f5f5f5;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
-}
-
-.moon-phase {
-  --moon-phase-blur: 3px;
-  --moon-phase-mask-bg: #000;
-  --moon-phase-mask-opacity: 0.85;
-  --moon-phase-filter: sepia(1) grayscale(0.25);
-  
-  --_w: calc(100% - 1% * v-bind('(moonStore.illumination || 0)'));
-  --_lat: v-bind('moonStore.location.lat');
-  --_hour: v-bind('moonStore.currentDate.getHours()');
-  --_l: calc(var(--_lat) * 1.5deg);
-  --_a: calc((var(--_hour) - 12) * 15 * 0.7 * 1deg);
-  --_r: calc(var(--_l) + var(--_a));
-
-  display: block;
-  width: 200px;
-  height: 200px;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  position: relative;
-  overflow: hidden;
-  rotate: var(--_r, 0deg);
-  background: #f5f5f5;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-}
-
-.moon-phase::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: url('https://assets.stoumann.dk/img/moon.png') center / cover no-repeat;
-  filter: var(--moon-phase-filter);
-}
-
-.moon-phase::after {
-  content: '';
-  position: absolute;
-  background-color: var(--moon-phase-mask-bg);
-  border-radius: var(--_btlr, 0) var(--_btrr, 0) var(--_bbrr, 0) var(--_bblr, 0);
-  filter: blur(var(--moon-phase-blur));
-  height: 100%;
-  inset-inline: var(--_ii, auto 0);
-  opacity: var(--moon-phase-mask-opacity);
-  width: var(--_w);
-}
-
-/* Phases */
-.moon-phase[phase*="First Quarter"],
-.moon-phase[phase*="Waxing"] {
-  --_ii: 0 auto;
-}
-
-.moon-phase[phase*="Crescent"],
-.moon-phase[phase*="First Quarter"],
-.moon-phase[phase*="Waxing"] {
-  --_bblr: 100%;
-  --_btlr: 100%;
-}
-
-.moon-phase[phase*="Crescent"],
-.moon-phase[phase*="Last Quarter"],
-.moon-phase[phase*="Waning"] {
-  --_btrr: 100%;
-  --_bbrr: 100%;
-}
-
-.moon-phase[phase="Waxing Gibbous"]::after {
-  border-radius: 0;
-  width: 100%;
-}
-
-.moon-phase[phase="Waxing Gibbous"]::after {
-  mask: radial-gradient(
-    circle at 100% 50%,
-    #0000 calc(100% - var(--_w)),
-    #000 calc(100% - var(--_w) + 1px + (2 * var(--moon-phase-blur, 0)))
-  );
-}
-
-.moon-phase[phase="Waning Gibbous"]::after {
-  mask: radial-gradient(
-    circle at 0% 50%,
-    #0000 calc(100% - var(--_w)),
-    #000 calc(100% - var(--_w) + 1px + (2 * var(--moon-phase-blur, 0)))
-  );
-}
-/* Remove pulse animation for cleaner look */
-
+/* Moon phase styles have been moved to MoonImage.vue */
 </style>
