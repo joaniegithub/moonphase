@@ -1,1 +1,1 @@
-if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/moonphaseapp/sw.js', { scope: '/moonphaseapp/' })})}
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/moonphase/sw.js', { scope: '/moonphase/' })})}
