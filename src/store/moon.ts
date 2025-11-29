@@ -43,14 +43,11 @@ interface MoonIllumination {
 }
 
 export const useMoonStore = defineStore('moon', () => {
-  const location = ref<Location>({
-    name: 'New York',
-    lat: 40.7128,
-    lon: -74.0060
-  });
+  const location = ref<Location | null>(null);
   
   const phase = ref<number | null>(null);
   const phaseName = ref<string | null>(null);
+  const phaseSide = ref<string | null>(null);
   const illumination = ref<number | null>(null);
   const moonTimes = ref<MoonTimes>({ rise: null, set: null });
   const moonPosition = ref<MoonPosition | null>(null);
@@ -74,13 +71,35 @@ export const useMoonStore = defineStore('moon', () => {
     }) : '';
   });
   
-  function setLocation(newLocation: Location) {
+  function setLocation(newLocation: Location | null) {
     location.value = newLocation;
-    fetchMoonPhase();
+    if (newLocation) {
+      fetchMoonPhase();
+    } else {
+      // Reset moon data when location is cleared
+      phase.value = null;
+      phaseName.value = null;
+      illumination.value = null;
+      moonTimes.value = { rise: null, set: null };
+      moonPosition.value = null;
+      moonIllumination.value = null;
+      lastUpdated.value = null;
+      daysUntilNextFullMoon.value = null;
+      ageOfMoon.value = null;
+      distance.value = null;
+      angularSize.value = null;
+      nextNewMoon.value = null;
+      nextFullMoon.value = null;
+    }
   }
   
   async function fetchMoonPhase(date?: Date) {
     try {
+      if (!location.value) {
+        console.log('Location not set, skipping moon phase fetch');
+        return;
+      }
+      
       const targetDate = date || new Date();
       
       // Get moon illumination data with proper typing
@@ -194,6 +213,7 @@ export const useMoonStore = defineStore('moon', () => {
       } else {
         phaseName.value = 'Waning Crescent';
       }
+      phaseSide.value = phaseNum < 0.5 ? 'Waxing' : 'Waning';
       
       lastUpdated.value = targetDate;
     } catch (error) {
@@ -247,6 +267,7 @@ export const useMoonStore = defineStore('moon', () => {
     location,
     phase,
     phaseName,
+    phaseSide,
     illumination,
     moonTimes,
     moonPosition,

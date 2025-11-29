@@ -3,8 +3,7 @@ import { createPinia } from 'pinia'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
-import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
-import '@mdi/font/css/materialdesignicons.css'
+import { aliases, mdi } from 'vuetify/iconsets/mdi'
 import 'vuetify/styles'
 import App from './App.vue'
 
@@ -29,17 +28,30 @@ const vuetify = createVuetify({
     },
   },
   theme: {
-    defaultTheme: 'light',
+    defaultTheme: 'dark',
     themes: {
-      light: {
+      dark: {
+        dark: true,
         colors: {
-          primary: '#1976D2',
-          secondary: '#424242',
-          accent: '#82B1FF',
-          error: '#FF5252',
-          info: '#2196F3',
-          success: '#4CAF50',
-          warning: '#FFC107',
+          background: '#000',
+          surface: '#05060aff',
+          primary: '#3B82F6',
+          'primary-darken-1': '#2563EB',
+          secondary: '#60A5FA',
+          'secondary-darken-1': '#3B82F6',
+          error: '#EF4444',
+          info: '#60A5FA',
+          success: '#10B981',
+          warning: '#F59E0B',
+          // Text colors
+          'on-background': '#dae5ed',
+          'on-surface': '#dae5ed',
+          'on-primary': '#FFFFFF',
+          'on-secondary': '#FFFFFF',
+          'on-error': '#FFFFFF',
+          'on-info': '#FFFFFF',
+          'on-success': '#FFFFFF',
+          'on-warning': '#000000',
         },
       },
     },
