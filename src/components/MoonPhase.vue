@@ -1,11 +1,11 @@
 <template>
-  <v-card :key="componentKey" class="elevation-5">
+  <v-card class="elevation-5">
     <!-- Moon Phase Display -->
     <v-card-text class="pa-6">
       <div class="d-flex flex-column align-center">
         <!-- Moon Phase Name -->
         <h1 class="moon-phase-name mb-4 text-center">
-          {{ moonStore.phaseName }}
+          {{ moonStore.phaseName || "&nbsp;" }}
         </h1>
         
         <!-- Navigation Buttons and Moon Image -->
@@ -25,13 +25,13 @@
           </v-btn>
           
           <!-- Moon Image Component - Only show when we have a location -->
-          <template v-if="moonStore.location?.lat !== undefined && moonStore.location?.lon !== undefined">
-            <MoonImage :key="`${moonStore.location?.lat}-${moonStore.location?.lon}`" />
-          </template>
-          <div v-else class="moon-loading-animation">
+          <!-- <template v-if="moonStore.location?.lat !== undefined && moonStore.location?.lon !== undefined"> -->
+            <MoonImage  />
+          <!-- </template> -->
+          <!-- <div v-else class="moon-loading-animation">
             <div class="moon-loading-circle"></div>
             <div class="moon-loading-text">{{ locationStatusText }}</div>
-          </div>
+          </div> -->
           
           <!-- Next Button -->
           <v-btn 
@@ -442,7 +442,7 @@ onMounted(async () => {
   height: 100px;
   border: 4px solid rgba(255, 255, 255, 0.1);
   border-radius: 50%;
-  border-top-color: #3B82F6;
+  border-top-color: #e6d595ff;
   animation: spin 1s ease-in-out infinite;
   position: relative;
 }
@@ -456,7 +456,7 @@ onMounted(async () => {
   bottom: -4px;
   border: 4px solid transparent;
   border-radius: 50%;
-  border-top-color: #60A5FA;
+  border-top-color: #e6d595ff;
   animation: spin 1.5s ease-in-out infinite;
   animation-delay: 0.2s;
 }
@@ -484,7 +484,6 @@ onMounted(async () => {
   font-weight: 500;
   letter-spacing: 1px;
   margin: 0 0 1rem 0;
-  color: #dae5ed;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   position: relative;
   padding-bottom: 0.5rem;

@@ -44,8 +44,8 @@ const vuetify = createVuetify({
           success: '#10B981',
           warning: '#F59E0B',
           // Text colors
-          'on-background': '#dae5ed',
-          'on-surface': '#dae5ed',
+          'on-background': '#edeadf',
+          'on-surface': '#ededdf',
           'on-primary': '#FFFFFF',
           'on-secondary': '#FFFFFF',
           'on-error': '#FFFFFF',

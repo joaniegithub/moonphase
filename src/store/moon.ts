@@ -74,7 +74,7 @@ export const useMoonStore = defineStore('moon', () => {
   function setLocation(newLocation: Location | null) {
     location.value = newLocation;
     if (newLocation) {
-      fetchMoonPhase();
+      fetchMoonPhase(undefined);
     } else {
       // Reset moon data when location is cleared
       phase.value = null;
@@ -99,6 +99,10 @@ export const useMoonStore = defineStore('moon', () => {
         console.log('Location not set, skipping moon phase fetch');
         return;
       }
+
+      // if (!transition) {
+      //   await new Promise(resolve => setTimeout(resolve, 10000));
+      // }
       
       const targetDate = date || new Date();
       
@@ -213,7 +217,8 @@ export const useMoonStore = defineStore('moon', () => {
       } else {
         phaseName.value = 'Waning Crescent';
       }
-      phaseSide.value = phaseNum < 0.5 ? 'Waxing' : 'Waning';
+      const isCrescent = illumination.value < 50;
+      phaseSide.value = (phaseNum < 0.5 ? 'Waxing' : 'Waning') + (isCrescent ? ' Crescent' : ' Gibbous');
       
       lastUpdated.value = targetDate;
     } catch (error) {
@@ -261,7 +266,7 @@ export const useMoonStore = defineStore('moon', () => {
            formatTime(moonTimes.value.set)
     };
   });
-
+console.log(phaseName.value, illumination.value);
   return {
     // State
     location,
