@@ -4,6 +4,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 import { fileURLToPath, URL } from 'url'
 
 export default defineConfig({
+  base: '/moonphase/',
   plugins: [
     vue({
       template: {
@@ -14,14 +15,17 @@ export default defineConfig({
     }),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['images/moonIcon.png'],
+      injectRegister: false,
+      includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Moon Phase App',
+        name: 'Moon Phase',
         short_name: 'MoonPhase',
         description: "Track the current moon phase and get detailed information about the moon's position and illumination.",
-        theme_color: '#3B82F6',
-        background_color: '#000000',
+        theme_color: '#05060aff',
+        background_color: '#05060aff',
         display: 'standalone',
+        start_url: '.',
+        scope: '.',
         icons: [
           {
             src: 'images/moonIcon.png',
@@ -38,23 +42,11 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,png,svg,woff2}'],
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/api\.example\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'api-cache',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          }
-        ]
+        globPatterns: ['**/*.{js,css,html,png,svg,ico}']
+      },
+      devOptions: {
+        enabled: true,
+        type: 'module'
       }
     })
   ],

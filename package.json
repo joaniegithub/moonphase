@@ -1,12 +1,20 @@
 {
-  "name": "moonphaseapp",
+  "name": "moonphase",
   "private": true,
+  "homepage": "http://joaniegithub.github.io/moonphase",
   "version": "0.1.0",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joaniegithub/moonphase",
+    "directory": "packages/joaniegithub/moonphase"
+  },
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc && vite build",
-    "preview": "vite preview"
+    "dev": "vite --base /moonphase/",
+    "build": "vue-tsc && vite build --base /moonphase/",
+    "preview": "vite preview --base /moonphase/",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@mdi/js": "^7.4.47",
@@ -21,6 +29,7 @@
     "@mdi/font": "^7.4.47",
     "@types/node": "^24.10.1",
     "@vitejs/plugin-vue": "^4.5.0",
+    "gh-pages": "^6.3.0",
     "typescript": "^5.2.2",
     "vite": "^4.4.9",
     "vite-plugin-pwa": "^1.2.0",

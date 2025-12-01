@@ -82,7 +82,7 @@ const moonVars = computed(() => {
   overflow: hidden;
   position: relative;
   transform: translateZ(0);
-  background: url('images/moon.png') center / cover no-repeat;
+  background: url('/images/moon.png') center / cover no-repeat;
   filter: sepia(0.5);
   opacity: 1;
 }

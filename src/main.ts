@@ -7,6 +7,11 @@ import { aliases, mdi } from 'vuetify/iconsets/mdi'
 import 'vuetify/styles'
 import App from './App.vue'
 
+// Import and register the service worker in development mode only
+if ('serviceWorker' in navigator && import.meta.env.MODE === 'production') {
+  import('./registerSW')
+}
+
 // Create Vue app
 const app = createApp(App)
 
