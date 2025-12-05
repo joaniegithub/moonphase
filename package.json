@@ -1,38 +1,47 @@
 {
-  "name": "moonphase",
-  "private": true,
-  "homepage": "http://joaniegithub.github.io/moonphase",
-  "version": "0.1.0",
-  "type": "module",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/joaniegithub/moonphase",
-    "directory": "packages/joaniegithub/moonphase"
-  },
-  "scripts": {
-    "dev": "vite --base /moonphase/",
-    "build": "vue-tsc && vite build --base /moonphase/",
-    "preview": "vite preview --base /moonphase/",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
-  },
-  "dependencies": {
-    "@mdi/js": "^7.4.47",
-    "@noim/suncalc3": "^2.0.5",
-    "date-fns": "^4.1.0",
-    "mdi-vue": "^3.0.13",
-    "pinia": "^3.0.4",
-    "vue": "^3.3.8",
-    "vuetify": "^3.11.0"
-  },
-  "devDependencies": {
-    "@mdi/font": "^7.4.47",
-    "@types/node": "^24.10.1",
-    "@vitejs/plugin-vue": "^4.5.0",
-    "gh-pages": "^6.3.0",
-    "typescript": "^5.2.2",
-    "vite": "^4.4.9",
-    "vite-plugin-pwa": "^1.2.0",
-    "vue-tsc": "^1.8.5"
-  }
+	"name": "moonphase",
+	"private": true,
+	"homepage": "http://joaniegithub.github.io/moonphase",
+	"version": "0.1.0",
+	"type": "module",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/joaniegithub/moonphase",
+		"directory": "packages/joaniegithub/moonphase"
+	},
+	"scripts": {
+		"dev": "concurrently \"vite --base /moonphase/\" \"eslint . --ext .vue,.js,.ts --fix --watch\"",
+		"build": "vue-tsc && vite build --base /moonphase/",
+		"preview": "vite preview --base /moonphase/",
+		"predeploy": "npm run build",
+		"deploy": "gh-pages -d dist",
+		"format": "prettier --write \"src/**/*.{vue,js,ts}\"",
+		"format:check": "prettier --check \"src/**/*.{vue,js,ts}\""
+	},
+	"dependencies": {
+		"@jamescoyle/vue-icon": "^0.1.2",
+		"@mdi/js": "^7.4.47",
+		"@noim/suncalc3": "^2.0.5",
+		"date-fns": "^4.1.0",
+		"mdi-vue": "^3.0.13",
+		"pinia": "^3.0.4",
+		"vue": "^3.3.8",
+		"vuetify": "^3.11.0"
+	},
+	"devDependencies": {
+		"@mdi/font": "^7.4.47",
+		"@types/node": "^24.10.1",
+		"@typescript-eslint/eslint-plugin": "^8.48.1",
+		"@typescript-eslint/parser": "^8.48.1",
+		"@vitejs/plugin-vue": "^4.5.0",
+		"concurrently": "^9.1.0",
+		"eslint": "^9.39.1",
+		"eslint-plugin-vue": "^10.6.2",
+		"gh-pages": "^6.3.0",
+		"prettier": "^3.4.2",
+		"typescript": "^5.2.2",
+		"vite": "^4.4.9",
+		"vite-plugin-pwa": "^1.2.0",
+		"vue-tsc": "^1.8.5"
+	}
 }
