@@ -2,8 +2,12 @@
   <div class="moon-phase-display">
     <div 
       class="moon-phase" 
-      :class="{ 'is-loading': !moonStore.illumination }"
+      :class="{ 
+        'is-loading': !moonStore.illumination,
+        'moon-visible': isMoonVisible
+      }"
       :data-phase="moonStore.phaseSide"
+	  :style="{ opacity: isMoonVisible ? 1 : 0 }"
     >
       <div class="moon-half-shadow">
         <div class="moon-curved-shadow"></div>
@@ -13,20 +17,63 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+    //   :style="{ opacity: isMoonVisible ? 1 : 0.20 }"
+import { computed, onMounted, ref, watch } from 'vue';
 import { useMoonStore } from '../store/moon';
 
 const moonStore = useMoonStore();
+const isMoonVisible = ref(true);
+
+// Check if current time is between moonrise and moonset
+const checkMoonVisibility = () => {
+	if (!moonStore.currentDateUseTime) {
+		return true;
+	}
+  if (!moonStore.moonTimes?.rise || !moonStore.moonTimes?.set) {
+    isMoonVisible.value = true;
+    return;
+  }
+
+  // Use the current time from the store if available (from the time slider), otherwise use the current time
+  const currentTime = moonStore.currentDate || new Date();
+  const rise = new Date(moonStore.moonTimes.rise);
+  const set = new Date(moonStore.moonTimes.set);
+  
+  // If moon sets on the next day
+  if (set < rise) {
+    isMoonVisible.value = currentTime >= rise || currentTime <= set;
+  } else {
+    isMoonVisible.value = currentTime >= rise && currentTime <= set;
+  }
+};
+
+// Watch for changes in moon times and current date
+watch(
+  [() => moonStore.moonTimes, () => moonStore.currentDate],
+  () => {
+    checkMoonVisibility();
+  },
+  { deep: true }
+);
+
+// Check visibility initially and set up interval
+onMounted(() => {
+  checkMoonVisibility();
+  // Update visibility every minute
+  const interval = setInterval(checkMoonVisibility, 60000);
+  return () => clearInterval(interval);
+});
 
 const moonVars = computed(() => {
   const illumination = moonStore.illumination || 0;
   const phaseSide = moonStore.phaseSide || '';
   
   return {
-    _i: illumination < 1 ? '10' : '0',
+    _i: illumination,
+    _w: illumination < 1 ? '10' : '0',
     _ci: illumination > 50 ? (illumination - 50) : (50 - illumination),
     _crescent: illumination < 50,
-    _r: moonStore.moonPosition?.parallacticAngle || 0,
+    _r: moonStore.phaseRotation || 0,
     _phase: `"${phaseSide}"` // For attribute selectors if needed
   };
 });
@@ -35,23 +82,24 @@ const moonVars = computed(() => {
 <style scoped>
 .moon-phase-display {
   position: relative;
-  width: 70vw;
-  height: 70vw;
-  max-width: 500px;
-  max-height: 500px;
-  margin: 20px auto;
+  width: 100%;
+  /* max-width: 500px;
+  max-height: 500px; */
+  margin: 16px auto;
   border-radius: 50%;
   overflow: hidden;
   background: transparent;
+  flex-grow: 1;
   /* background: radial-gradient(circle,rgba(0, 0, 0, 0) 99%, rgba(0, 0, 0, 1) 100%); */
+   aspect-ratio: 1 / 1;
 }
 
-@media (min-width: 640px) {
+/* @media (min-width: 640px) {
   .moon-phase-display {
     width: 500px;
     height: 500px;
   }
-}
+} */
 
 .moon-phase.is-loading {
   opacity: 0.1;
@@ -71,6 +119,7 @@ const moonVars = computed(() => {
 
 .moon-phase {
   --_i: v-bind('moonVars._i');
+  --_w: v-bind('moonVars._w');
   --_ci: v-bind('moonVars._ci');
   --_curvedColor: v-bind('(moonVars._crescent ? '#000' : '#fff')');
   --_crescent: v-bind('(moonVars._crescent ? '20px' : '0px')');
@@ -80,11 +129,26 @@ const moonVars = computed(() => {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  position: relative;
+  position: absolute;
+  top: 0;
   transform: translateZ(0);
   background: url('/images/moon.png') center / cover no-repeat;
   filter: sepia(0.5);
   opacity: 1;
+  rotate: calc(var(--_r) * 1deg);
+}
+
+.moon-phase::after {
+  content: " ";
+  box-shadow: inset 0 0 1rem #00000088, inset 0 0 0.5rem #000;
+  display: block;
+  position: absolute;
+  left: -1px;
+  top: -1px;
+  right: -1px;
+  bottom: -1px;
+  border-radius: 50%;
+  opacity: calc(var(--_i) / 100);
 }
   
 .moon-half-shadow {
@@ -96,7 +160,6 @@ const moonVars = computed(() => {
   bottom: 0px;
   mix-blend-mode: multiply;
   opacity: 0.9;
-  rotate: calc(var(--_r) * 1deg);
   filter: blur(5px);
 }
 
@@ -120,10 +183,10 @@ const moonVars = computed(() => {
 }
 
 .moon-curved-shadow {
-  width: calc(2% * var(--_ci) + var(--_i)*1px - var(--_crescent));
+  width: calc(2% * var(--_ci) + var(--_w)*1px - var(--_crescent));
   /* transition: width 0.25s ease-in-out; */
-  top: calc(-7px - var(--_i)*1px);
-  bottom: calc(-7px - var(--_i)*1px);
+  top: calc(-7px - var(--_w)*1px);
+  bottom: calc(-7px - var(--_w)*1px);
   border-radius: 50%;
   left: 50%;
   transform: translateX(-50%);

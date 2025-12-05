@@ -1,179 +1,141 @@
 <template>
-  <v-card class="elevation-5">
-    <!-- Moon Phase Display -->
-    <v-card-text class="pa-6">
-      <div class="d-flex flex-column align-center">
-        <!-- Moon Phase Name -->
-        <h1 class="moon-phase-name mb-4 text-center">
-          {{ moonStore.phaseName || "&nbsp;" }}
-        </h1>
+  <!-- Moon Phase Display -->
+    <div class="d-flex flex-column align-center main-container">
+      <!-- Moon Phase Name -->
+      <h1 class="text-h5 font-weight-bold">
+        {{ moonStore.phaseName || "&nbsp;" }}
+      </h1>
+      
+      <!-- Navigation Buttons and Moon Image -->
+      <div class="d-flex align-center justify-center moon-image-container">
+        <!-- Previous Button -->
+        <v-btn 
+          color="primary"
+          variant="text"
+          @click="changeDate(-1)"
+          :disabled="loading"
+          class="mx-2 navigation-button"
+          icon
+        >
+          <v-icon icon="mdi-chevron-left" size="48"></v-icon>
+        </v-btn>
         
-        <!-- Navigation Buttons and Moon Image -->
-        <div class="d-flex align-center justify-center">
-          <!-- Previous Button -->
-          <v-btn 
-            color="grey-lighten-1"
-            variant="text"
-            @click="changeDate(-1)"
-            :disabled="loading"
-            class="mx-2"
-            width="56"
-            height="56"
-            rounded="circle"
-          >
-            <v-icon icon="mdi-chevron-left" size="48"></v-icon>
-          </v-btn>
-          
-          <!-- Moon Image Component - Only show when we have a location -->
-          <!-- <template v-if="moonStore.location?.lat !== undefined && moonStore.location?.lon !== undefined"> -->
-            <MoonImage  />
-          <!-- </template> -->
-          <!-- <div v-else class="moon-loading-animation">
-            <div class="moon-loading-circle"></div>
-            <div class="moon-loading-text">{{ locationStatusText }}</div>
-          </div> -->
-          
-          <!-- Next Button -->
-          <v-btn 
-            color="grey-lighten-1"
-            variant="text"
-            @click="changeDate(1)"
-            :disabled="loading"
-            class="mx-2"
-            width="56"
-            height="56"
-            rounded="circle"
-          >
-            <v-icon icon="mdi-chevron-right" size="48"></v-icon>
-          </v-btn>
-        </div>
+        <MoonImage />
         
-        <!-- Moon Time Slider -->
-        <!--div v-if="hasMoonTimes" class="moon-time-slider mt-4 px-4" style="width: 100%; max-width: 500px;">
-          <div class="d-flex align-center justify-space-between mb-2">
-            <div class="d-flex align-center">
-              <v-icon small class="mr-1">mdi-weather-night</v-icon>
-              <span class="text-caption">Moon Time:</span>
-              <span class="text-subtitle-2 ml-1">{{ formatTime(currentMoonTime) }}</span>
-            </div>
-          </div>
-          <v-slider
-            v-model="moonTimeValue"
-            :min="moonRiseHour || 0"
-            :max="moonSetHour || 24"
-            :step="1"
-            hide-details
-            @update:model-value="updateMoonTime"
-            color="primary"
-            thumb-label="always"
-            :thumb-label-text="formatMoonTimeLabel"
-            class="mt-2"
-            :disabled="!hasMoonTimes"
-          >
-            <template v-slot:prepend>
-              <v-btn
-                size="small"
-                variant="text"
-                icon="mdi-chevron-left"
-                @click="updateMoonTime(moonTimeValue - 1)"
-                :disabled="loading "
-              ></v-btn>
-            </template>
-            <template v-slot:append>
-              <v-btn
-                size="small"
-                variant="text"
-                icon="mdi-chevron-right"
-                @click="updateMoonTime(moonTimeValue + 1)"
-                :disabled="loading"
-              ></v-btn>
-            </template>
-          </v-slider>
-          <div v-if="hasMoonTimes" class="d-flex justify-space-between mt-n2">
-            <div class="d-flex flex-column align-center">
-              <span class="text-caption">Moonrise</span>
-              <span class="text-caption font-weight-medium">{{ moonStore.formattedMoonTimes?.rise }}</span>
-            </div>
-            <div class="d-flex flex-column align-center">
-              <span class="text-caption">Moonset</span>
-              <span class="text-caption font-weight-medium">{{ moonStore.formattedMoonTimes?.set }}</span>
-            </div>
-          </div>
-          <v-alert
-            v-else
-            type="info"
-            variant="tonal"
-            density="compact"
-            class="mt-2"
-          >
-            {{ moonStatusMessage }}
-          </v-alert>
-        </div-->
-
-        <div v-if="moonStore.location?.name" class="d-flex align-center justify-center mt-4">
-          <v-icon small icon="mdi-map-marker"></v-icon>
-          <span class="text-subtitle-2">{{ moonStore.location.name }}</span>
-        </div>
-        <p class="text-subtitle-2 text-center mt-1">
-          {{ moonStore.formattedDate }}
-        </p>
+        <!-- Next Button -->
+        <v-btn 
+          color="primary"
+          variant="text"
+          @click="changeDate(1)"
+          :disabled="loading"
+          class="mx-2 navigation-button"
+          icon
+        >
+          <v-icon icon="mdi-chevron-right" size="48"></v-icon>
+        </v-btn>
       </div>
 
       <!-- Moon Information Grid -->
-      <v-container class="mt-4">
-        <v-row>
-          <!-- Left Column -->
-          <v-col cols="12" md="6">
-            <v-card variant="outlined" class="mb-4">
-              <v-card-text>
-                <div class="text-h6 mb-2">Moon Phase</div>
-                <v-divider class="mb-3"></v-divider>
-                <div class="d-flex justify-space-between mb-2">
-                  <span>Phase:</span>
-                  <span class="font-weight-medium">{{ moonStore.phaseName || 'Loading...' }}</span>
-                </div>
-                <div class="d-flex justify-space-between mb-2">
-                  <span>Illumination:</span>
-                  <span class="font-weight-medium">{{ moonStore.illumination ? Math.round(moonStore.illumination) + '%' : '--' }}</span>
-                </div>
-                <div class="d-flex justify-space-between mb-2">
-                  <span>Moon Age:</span>
-                  <span class="font-weight-medium">{{ moonStore.ageOfMoon ? moonStore.ageOfMoon + ' days' : '--' }}</span>
-                </div>
-                <div class="d-flex justify-space-between mb-2">
-                  <span>Distance:</span>
-                  <span class="font-weight-medium">{{ moonStore.distance ? Math.round(moonStore.distance).toLocaleString() + ' km' : '--' }}</span>
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-col>
+      <v-container class="bottom-info">
 
-          <!-- Right Column -->
-          <v-col cols="12" md="6">
-            <v-card variant="outlined">
-              <v-card-text>
-                <div class="text-h6 mb-2">Moon Events</div>
-                <v-divider class="mb-3"></v-divider>
-                <div class="d-flex justify-space-between mb-2">
-                  <span>Next Full Moon:</span>
-                  <span class="font-weight-medium">{{ moonStore.nextFullMoon ? formatDate(moonStore.nextFullMoon) : '--' }}</span>
-                </div>
-                <div class="d-flex justify-space-between mb-2">
-                  <span>Next New Moon:</span>
-                  <span class="font-weight-medium">{{ moonStore.nextNewMoon ? formatDate(moonStore.nextNewMoon) : '--' }}</span>
-                </div>
-                <div class="d-flex justify-space-between mb-2">
-                  <span>Moonrise:</span>
-                  <span class="font-weight-medium">{{ moonStore.moonTimes?.rise ? formatTime(moonStore.moonTimes.rise) : '--' }}</span>
-                </div>
-                <div class="d-flex justify-space-between mb-2">
-                  <span>Moonset:</span>
-                  <span class="font-weight-medium">{{ moonStore.moonTimes?.set ? formatTime(moonStore.moonTimes.set) : '--' }}</span>
-                </div>
-              </v-card-text>
-            </v-card>
+		<div class="d-flex align-center justify-center">
+			<!-- <v-icon small icon="mdi-map-marker"></v-icon>
+			<span class="text-subtitle-2">{{ moonStore.location.name }}</span> -->
+			<LocationPicker></LocationPicker>
+		</div>
+		<p class="text-caption text-center mt-2 d-flex align-center justify-center">
+      <v-btn
+        icon
+        variant="text"
+        size="small"
+        @click.stop="showCalendar = !showCalendar"
+        :color="'primary'"
+      >
+        <v-icon>mdi-calendar</v-icon>
+      </v-btn>
+      {{ moonStore.formattedDate }}
+      <v-btn
+        icon
+        variant="text"
+        size="small"
+        @click="showTimeSlider = !showTimeSlider"
+        :color="'primary'"
+      >
+        <v-icon>mdi-clock-outline</v-icon>
+      </v-btn>
+    </p>
+    
+    <!-- Time Slider -->
+    <v-slider
+      v-if="showTimeSlider"
+      v-model="currentHour"
+      class="mt-4 px-4"
+      min="0"
+      :max="24"
+      step="1"
+      :thumb-size="24"
+      :thumb-label="'always'"
+      :thumb-label-text="(value: number) => value === 24 ? '24:00' : `${value}:00`"
+      @update:modelValue="updateMoonTime"
+    >
+      <template v-slot:prepend>
+        <v-btn
+          icon="mdi-chevron-left"
+          variant="text"
+          size="small"
+          @click="currentHour = Math.max(0, currentHour - 1)"
+        ></v-btn>
+      </template>
+      <template v-slot:append>
+        <v-btn
+          icon="mdi-chevron-right"
+          variant="text"
+          size="small"
+          @click="currentHour = Math.min(24, currentHour + 1)"
+        ></v-btn>
+      </template>
+    </v-slider>
+		<!-- Moon Information (shown when calendar is closed) -->
+    <v-card v-if="!showCalendar" variant="outlined" class="mt-2">
+      <v-card-title class="text-h6 text-center my-2">Moon Information</v-card-title>
+      <v-card-text class="pb-1">
+        <v-row dense>
+          <v-col cols="6" class="text-right pr-2">
+            <div class="mb-1 text-grey-lighten-1">Illumination:</div>
+            <div class="mb-1 text-grey-lighten-1">Moon Age:</div>
+            <div class="mb-1 text-grey-lighten-1">Distance:</div>
+            <div class="mb-1 text-grey-lighten-1">Moonrise:</div>
+            <div class="text-grey-lighten-1">Moonset:</div>
+          </v-col>
+          <v-col cols="6" class="text-left pl-2">
+            <div class="mb-1 font-weight-bold">{{ moonStore.illumination ? moonStore.illumination.toFixed(1) + '%' : '--' }}</div>
+            <div class="mb-1 font-weight-bold">{{ moonStore.ageOfMoon ? moonStore.ageOfMoon + ' days' : '--' }}</div>
+            <div class="mb-1 font-weight-bold">{{ moonStore.distance ? Math.round(moonStore.distance).toLocaleString() + ' km' : '--' }}</div>
+            <div class="mb-1 font-weight-bold">{{ moonStore.moonTimes?.rise ? formatTime(moonStore.moonTimes.rise) : '--' }}</div>
+            <div class="font-weight-bold">{{ moonStore.moonTimes?.set ? formatTime(moonStore.moonTimes.set) : '--' }}</div>
           </v-col>
         </v-row>
+      </v-card-text>
+      <!--v-divider class="mb-1 mt-1"></!--v-divider-->
+      <v-card-title class="text-h6 text-center mb-2">Moon Events</v-card-title>
+      <v-card-text>
+        <v-row dense>
+          <v-col cols="6" class="text-right pr-2">
+            <div class="mb-1 text-grey-lighten-1">Next Full Moon:</div>
+            <div class="mb-1 text-grey-lighten-1">Next New Moon:</div>
+          </v-col>
+          <v-col cols="6" class="text-left pl-2">
+            <div class="mb-1 font-weight-bold">{{ moonStore.nextFullMoon ? formatDate(moonStore.nextFullMoon) : '--' }}</div>
+            <div class="mb-1 font-weight-bold">{{ moonStore.nextNewMoon ? formatDate(moonStore.nextNewMoon) : '--' }}</div>
+          </v-col>
+        </v-row>
+      </v-card-text>
+    </v-card>
+
+    <!-- Calendar (shown when calendar is open) -->
+    <v-card v-else variant="outlined" class="mt-2">
+      <MoonCalendar @close="showCalendar = false" />
+    </v-card>
       </v-container>
       
       <!-- Loading Indicator -->
@@ -183,14 +145,17 @@
         color="primary"
         class="mt-4"
       ></v-progress-linear>
-    </v-card-text>
-  </v-card>
+
+
+    </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { useMoonStore } from '@/store/moon';
 import MoonImage from './MoonImage.vue';
+import LocationPicker from './LocationPicker.vue';
+import MoonCalendar from './MoonCalendar.vue';
 import { addDays, format, subDays, isSameDay } from 'date-fns';
 
 const moonStore = useMoonStore();
@@ -198,41 +163,9 @@ const loading = ref(false);
 const componentKey = ref(0);
 const locationStatusText = ref('Detecting your location...');
 
-// Moon time slider state
-// const moonTimeValue = ref(0);
-// const currentMoonTime = ref<Date>(new Date());
-
-// Computed properties for moon time slider
-// const hasMoonTimes = computed(() => {
-//   return moonStore.moonTimes?.rise && moonStore.moonTimes?.set && 
-//          !moonStore.moonTimes.alwaysUp && !moonStore.moonTimes.alwaysDown;
-// });
-
-// const moonStatusMessage = computed(() => {
-//   if (moonStore.moonTimes?.alwaysUp) return 'The moon is always above the horizon today';
-//   if (moonStore.moonTimes?.alwaysDown) return 'The moon is always below the horizon today';
-//   return 'Moon times not available for this location';
-// });
-
-// Calculate mid-point between moonrise and moonset
-// const midMoonTime = computed(() => {
-//   if (!hasMoonTimes.value) return null;
-//   const rise = moonStore.moonTimes.rise!.getTime();
-//   const set = moonStore.moonTimes.set!.getTime();
-//   return new Date(rise + (set - rise) / 2);
-// });
-// const moonRiseHour = computed(() => {
-//   if (!hasMoonTimes.value) return null;
-//   const rise = moonStore.moonTimes.rise!.getTime();
-//   return new Date(rise).getHours();
-// });
-// const moonSetHour = computed(() => {
-//   if (!hasMoonTimes.value) return null;
-//   const set = moonStore.moonTimes.set!.getTime();
-//   return (new Date(set).getHours());
-// });
-
-// Calculate moon visibility percentage (0-100% between rise and set)
+const showCalendar = ref(false);
+const showTimeSlider = ref(false);
+const currentHour = ref(new Date().getHours());
 
 // Format time for display
 const formatTime = (date: Date | null) => {
@@ -243,53 +176,6 @@ const formatTime = (date: Date | null) => {
     hour12: true
   });
 };
-
-// Format moon time label for slider thumb
-// const formatMoonTimeLabel = (value: number) => {
-//   if (!hasMoonTimes.value) return '--:--';
-  
-//   const time = getMoonTimeFromValue(value);
-//   return formatTime(time);
-// };
-
-// Get moon time from slider value (0 to moonTimeSteps-1)
-// const getMoonTimeFromValue = (value: number): Date | null => {
-//   if (!hasMoonTimes.value) return null;
-//   const rise = moonStore.moonTimes.rise!;
-//   const newTime = new Date(rise);
-//   newTime.setMinutes(newTime.getMinutes() + 60);
-//   return newTime;
-// };
-
-// Update moon time when slider changes
-// const updateMoonTime = (value: number) => {
-//   if (!hasMoonTimes.value) return;
-//   moonTimeValue.value = value;
-  
-//   // Get the corresponding time
-//   const newTime = getMoonTimeFromValue(value);
-//   if (!newTime) return;
-  
-//   currentMoonTime.value = newTime;
-  
-//   // Update the store with the new time
-//   const newDate = new Date(moonStore.currentDate);
-//   console.log(value, newTime);
-//   newDate.setHours(value, newTime.getMinutes(), 0, 0);
-//   // console.log(newTime);
-  
-//   moonStore.setCurrentDate(newDate);
-//   moonStore.fetchMoonPhase(newDate);
-// };
-
-// Watch for external date changes to update the slider
-// watch(() => moonStore.currentDate, (newDate) => {
-//   if (!newDate || !hasMoonTimes.value) return;
-  
-//   currentMoonTime.value = newDate;
-// }, { immediate: true });
-
-// console.log(moonStore);
 
 const changeDate = async (days: number) => {
   try {
@@ -302,13 +188,13 @@ const changeDate = async (days: number) => {
     const targetDate = new Date(currentDate);
     targetDate.setDate(currentDate.getDate() + days);
     
+    // Update the hour if we're using the time slider
+    if (showTimeSlider.value) {
+      targetDate.setHours(currentHour.value, 0, 0, 0);
+    }
+    
     // Use setCurrentDate to update the date and fetch moon phase
     await moonStore.setCurrentDate(targetDate);
-    
-    // Force a re-render by updating the key
-    /*await watch(() => {
-      componentKey.value++;
-    });*/
     
   } catch (error) {
     console.error('Error changing date:', error);
@@ -319,94 +205,40 @@ const changeDate = async (days: number) => {
 
 // Format date for display
 const formatDate = (date: Date) => {
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  });
+  return format(date, 'MMM d, yyyy');
 };
 
-function changeLocation() {
-  // This would open a location picker dialog in a real app
-  const newLocation = window.prompt('Enter a location (e.g., New York, NY):', moonStore.location?.name || 'New York');
-  if (newLocation) {
-    // In a real app, you would geocode this location
-    moonStore.setLocation({
-      name: newLocation,
-      lat: 40.7128, // Default to New York
-      lon: -74.0060
-    });
+// Update moon time when slider changes
+const updateMoonTime = () => {
+  const newDate = new Date(moonStore.currentDate || new Date());
+  if (currentHour.value === 24) {
+    // Set to 23:59:59.999 for the end of the day
+    newDate.setHours(23, 59, 59, 999);
+  } else {
+    newDate.setHours(currentHour.value, 0, 0, 0);
   }
-}
+  moonStore.setCurrentDate(newDate, true);
+};
 
-// Helper function to get location name from coordinates
-async function getLocationName(lat: number, lon: number): Promise<string> {
-  try {
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`
-    );
-    const data = await response.json();
-    // Return city name if available, otherwise return timezone
-    return data.address?.city || 
-           data.address?.town || 
-           data.address?.village || 
-           data.address?.county || 
-           data.address?.state || 
-           data.timezone?.split('/').pop() || 
-           'Your Location';
-  } catch (error) {
-    console.error('Error getting location name:', error);
-    return 'Your Location';
+// Watch for date changes to reset the hour
+watch(() => moonStore.currentDate, (newDate) => {
+  if (newDate) {
+    const hours = newDate.getHours();
+    const minutes = newDate.getMinutes();
+    const seconds = newDate.getSeconds();
+    // Check if it's the end of day (23:59:59.999)
+    currentHour.value = (hours === 23 && minutes === 59 && seconds === 59 && newDate.getMilliseconds() >= 999) 
+      ? 24 
+      : hours;
   }
-}
+});
 
 // Initialize moon phase data
 onMounted(async () => {
   try {
-    // First try to get user's location
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          // Successfully got location
-          const { latitude, longitude } = position.coords;
-          const locationName = await getLocationName(latitude, longitude);
-          
-          await moonStore.setLocation({
-            name: locationName,
-            lat: latitude,
-            lon: longitude
-          });
-          
-          await moonStore.fetchMoonPhase();
-          componentKey.value++;
-        },
-        async (error) => {
-          // If geolocation fails, fall back to default location
-          console.warn('Geolocation error:', error);
-          await moonStore.fetchMoonPhase();
-          componentKey.value++;
-        }
-      );
-    } else {
-      // If geolocation is not supported
-      console.warn('Geolocation is not supported by this browser');
-      await moonStore.fetchMoonPhase();
-      componentKey.value++;
-    }
+    await moonStore.fetchMoonPhase();
   } catch (error) {
     console.error('Error initializing moon phase data:', error);
-    locationStatusText.value = 'Location access denied. Using default location.';
-    // Set a default location if geolocation fails
-    const defaultLocation = {
-      name: 'New York',
-      lat: 40.7128,
-      lon: -74.0060
-    };
-    const locationName = await getLocationName(defaultLocation.lat, defaultLocation.lon);
-    moonStore.setLocation({
-      ...defaultLocation,
-      name: locationName
-    });
   } finally {
     loading.value = false;
   }
@@ -414,6 +246,32 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.navigation-button {
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  min-height: 48px !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  margin: 0 8px !important;
+}
+
+.navigation-button:hover::before {
+  opacity: 0.08 !important;
+  border-radius: 50% !important;
+}
+
+.navigation-button:active::before {
+  opacity: 0.16 !important;
+  border-radius: 50% !important;
+}
+
+/* Ensure the icon is properly centered */
+.navigation-button .v-icon {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 /* Moon Loading Animation */
 .moon-loading-animation {
   width: 100%;
@@ -489,5 +347,35 @@ onMounted(async () => {
   padding-bottom: 0.5rem;
 }
 
-/* Moon phase styles have been moved to MoonImage.vue */
+.v-picker--date .v-date-picker-table--date th {
+  padding: 4px 0;
+}
+
+.v-picker--date .v-date-picker-table--date th,
+.v-picker--date .v-date-picker-table--date td {
+  width: 36px;
+  height: 36px;
+}
+
+.v-picker--date .v-date-picker-table--date .v-btn {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.main-container {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 20px 0;
+  justify-content: space-between;
+}
+
+.moon-image-container {
+  width: calc(100% + 40px);
+	flex-grow: 1;
+	flex-shrink: 1;
+}
+.bottom-info {
+	padding: 0;
+}
 </style>
