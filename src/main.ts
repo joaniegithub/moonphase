@@ -3,7 +3,6 @@ import { createPinia } from 'pinia';
 import {
 	createVuetify,
 	type IconSet,
-	type IconProps,
 	type IconAliases
 } from 'vuetify';
 import * as components from 'vuetify/components';
@@ -12,11 +11,7 @@ import { aliases, mdi } from 'vuetify/iconsets/mdi'; // <-- Make sure you import
 import 'vuetify/styles';
 import App from './App.vue';
 import { mdiWeatherMoonsetDown, mdiWeatherMoonsetUp } from '@mdi/js';
-
-// 1. Import the CSS for the standard MDI webfont (required for mdi-clock-outline to work by class name)
 import '@mdi/font/css/materialdesignicons.css';
-
-// 3. Import the *SVG* iconset renderer function
 import { mdi as mdiSvgSet } from 'vuetify/iconsets/mdi-svg';
 
 // Import and register the service worker in development mode only
@@ -62,7 +57,7 @@ const vuetify = createVuetify({
 					surface: '#05060aff',
 					primary: '#dfd6b5ff',
 					'primary-darken-1': '#cbbf96ff',
-					secondary: '#dfd6b5ff',
+					secondary: '#aea37fff',
 					'secondary-darken-1': '#cbbf96ff',
 					error: '#EF4444',
 					info: '#60A5FA',

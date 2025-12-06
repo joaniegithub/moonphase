@@ -23,9 +23,6 @@
 		size: 24,
 		color: 'currentColor'
 	});
-
-	// Debug: Log when component is created
-	console.log('SvgIcon created with path:', props.path);
 </script>
 
 <style scoped>

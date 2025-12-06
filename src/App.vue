@@ -52,7 +52,7 @@
 
 	@media (min-width: 640px) {
 		/* .moon-phase-app {
-  	padding: 0 20px;
-  } */
+		padding: 0 20px;
+	} */
 	}
 </style>

@@ -1,11 +1,11 @@
 <template>
 	<div class="location-picker">
-		<v-dialog v-model="showDialog" max-width="500px">
+		<v-dialog v-model="showDialog" fullscreen>
 			<template v-slot:activator="{ props }">
 				<v-btn
 					v-bind="props"
-					variant="outlined"
-					color="primary"
+					variant="text"
+					color="secondary"
 					class="location-button"
 					prepend-icon="mdi-map-marker"
 					size="small"
@@ -15,13 +15,21 @@
 			</template>
 
 			<v-card>
-				<v-card-title>Change Location</v-card-title>
+				<v-card-title class="d-flex align-center">
+					<span class="flex-grow-1 text-center font-weight-bold">Change Location</span>
+					<v-btn
+						icon="mdi-close"
+						variant="text"
+						size="small"
+						@click="showDialog = false"
+					></v-btn>
+				</v-card-title>
 				<v-card-text>
 					<v-btn
 						block
 						color="primary"
 						variant="tonal"
-						class="mb-4"
+						class="use-location-button"
 						prepend-icon="mdi-crosshairs-gps"
 						@click="getCurrentLocation"
 						:loading="isGettingLocation"
@@ -169,7 +177,6 @@
 				`https://nominatim.openstreetmap.org/search?format=geocodejson&addressdetails=1&q=${encodeURIComponent(searchQuery.value)}`
 			);
 			const data = await response.json();
-			console.log(data);
 			searchResults.value = data.features.map((item: any) => ({
 				name: `${item.properties.geocoding.name}, ${item.properties.geocoding.state ? item.properties.geocoding.state + ', ' : ''}${item.properties.geocoding.country}`,
 				lat: parseFloat(item.geometry.coordinates[1]),
@@ -243,6 +250,10 @@
 <style scoped>
 	.location-picker {
 		display: inline-block;
+	}
+
+	.use-location-button {
+		text-transform: none;
 	}
 
 	.location-button {

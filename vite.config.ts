@@ -29,14 +29,20 @@ export default defineConfig({
 				scope: '.',
 				icons: [
 					{
-						src: 'images/moonIcon.png',
+						src: 'icons/android-chrome-192x192.png',
 						sizes: '192x192',
 						type: 'image/png',
 						purpose: 'any maskable'
 					},
 					{
-						src: 'images/moonIcon.png',
+						src: 'icons/android-chrome-512x512.png',
 						sizes: '512x512',
+						type: 'image/png',
+						purpose: 'any maskable'
+					},
+					{
+						src: 'icons/moonIcon.png',
+						sizes: '1024x1024',
 						type: 'image/png',
 						purpose: 'any maskable'
 					}

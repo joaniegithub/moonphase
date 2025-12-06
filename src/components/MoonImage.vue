@@ -26,7 +26,8 @@
 	// Check if current time is between moonrise and moonset
 	const checkMoonVisibility = () => {
 		if (!moonStore.currentDateUseTime) {
-			return true;
+			isMoonVisible.value = true;
+			return;
 		}
 		if (!moonStore.moonTimes?.rise || !moonStore.moonTimes?.set) {
 			isMoonVisible.value = true;
@@ -72,7 +73,7 @@
 			_w: illumination < 1 ? '10' : '0',
 			_ci: illumination > 50 ? illumination - 50 : 50 - illumination,
 			_crescent: illumination < 50,
-			_r: moonStore.phaseRotation || 0,
+			_r: moonStore.currentDateUseTime ? moonStore.phaseRotation || 0 : 0,
 			_phase: `"${phaseSide}"` // For attribute selectors if needed
 		};
 	});
@@ -82,16 +83,14 @@
 	.moon-phase-display {
 		position: relative;
 		width: 100%;
-		/* max-width: 500px;
-  max-height: 500px; */
 		margin: 16px auto;
 		border-radius: 50%;
 		overflow: hidden;
 		background: transparent;
 		flex-grow: 1;
-		/* background: radial-gradient(circle,rgba(0, 0, 0, 0) 99%, rgba(0, 0, 0, 1) 100%); */
 		aspect-ratio: 1 / 1;
 	}
+	/* background: radial-gradient(circle,rgba(0, 0, 0, 0) 99%, rgba(0, 0, 0, 1) 100%); */
 
 	/* @media (min-width: 640px) {
   .moon-phase-display {
@@ -131,7 +130,7 @@
 		top: 0;
 		transform: translateZ(0);
 		background: url('/images/moon.png') center / cover no-repeat;
-		filter: sepia(0.5);
+		filter: sepia(0.20);
 		opacity: 1;
 		rotate: calc(var(--_r) * 1deg);
 	}

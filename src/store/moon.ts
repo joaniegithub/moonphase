@@ -269,7 +269,7 @@ function calculatePhaseRotation(
 		moonPosition.parallacticAngleDegrees;
 	rotationDegrees = ((rotationDegrees + 360 + 180) % 360) - 180;
 	// rotationDegrees = -(rotationDegrees + 360 + 180) % 360 + 90;
-	console.log(rotationDegrees);
+	// console.log(rotationDegrees);
 	// console.log(rotationRadians);
 	// console.log(targetDate.getHours()+'h:', 'moonIllumination.angle: '+moonIllumination.angle, 'moonPosition.parallacticAngle: '+moonPosition.parallacticAngle);
 	return moonPosition.parallacticAngleDegrees;

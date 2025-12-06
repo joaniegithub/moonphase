@@ -31,7 +31,7 @@
 
 		<v-slider
 			v-model="localHour"
-			class="mt-4"
+			class="time-slider mt-4"
 			min="0"
 			:max="24"
 			step="1"
@@ -65,7 +65,8 @@
 	const emit = defineEmits<Emits>();
 
 	const moonStore = useMoonStore();
-	const thickLabels = { 0: '0', 6: '6', 12: '12', 18: '18', 24: '24' };
+	// const thickLabels = { 0: '0', 6: '6', 12: '12', 18: '18', 24: '24' };
+	const thickLabels = { 0: '0', 4: '4', 8: '8', 12: '12', 16: '16', 20: '20', 24: '24' };
 
 	const localHour = ref(props.modelValue);
 
@@ -99,6 +100,12 @@
 	};
 </script>
 
+<style>
+	.v-slider-thumb {
+		z-index: 2;
+	}
+</style>
+
 <style scoped>
 	.time-slider-container {
 		position: relative;
@@ -106,12 +113,12 @@
 
 	.moon-markers-overlay {
 		position: absolute;
-		top: -8px;
+		top: 0 /*-8px*/;
 		left: 16px;
 		right: 16px;
-		height: 20px;
+		height: 32px /*20px*/;
 		pointer-events: none;
-		z-index: 0;
+		z-index: 1;
 	}
 
 	.moon-time-marker {
@@ -121,17 +128,16 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: transparent;
-		border-radius: 50%;
-		width: 20px;
-		height: 20px;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-		pointer-events: auto;
+		background: #000;
+		/* border-radius: 50%; */
+		width: 24px;
+		height: 32px /*20px*/;
 	}
 
 	.moon-time-marker svg {
-		background: rgb(var(--v-theme-surface));
+		background: #000;
 		border-radius: 50%;
+		width: 24px;
 	}
 
 	.moon-rise-marker,

@@ -317,7 +317,7 @@
 		min-width: 0;
 	}
 
-	.calendar-day:hover:not(.other-month) {
+	.calendar-day:hover:not(.other-month):not(.selected) {
 		background-color: rgba(var(--v-theme-primary), 0.12);
 		border-color: rgb(var(--v-theme-primary));
 	}
@@ -378,8 +378,4 @@
 	.calendar-day.has-icon {
 		background-color: rgba(var(--v-theme-on-surface), 0.2);
 	}
-
-	/* .calendar-day.has-icon:hover:not(.other-month) {
-  background-color: rgba(var(--v-theme-primary), 0.15);
-} */
 </style>

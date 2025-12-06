@@ -1,48 +1,65 @@
 <template>
 	<!-- Moon Phase Display -->
 	<div class="d-flex flex-column align-center main-container">
-		<!-- Moon Phase Name -->
-		<h1 class="text-h5 font-weight-bold">
-			{{ moonStore.phaseName || '&nbsp;' }}
-		</h1>
+		<div class="top-content d-flex align-center flex-column justify-center">
+			<!-- Location Picker -->
+			<LocationPicker></LocationPicker>
 
-		<!-- Navigation Buttons and Moon Image -->
-		<div class="d-flex align-center justify-center moon-image-container">
-			<!-- Previous Button -->
-			<v-btn
-				color="primary"
-				variant="text"
-				@click="changeDate(-1)"
-				:disabled="loading"
-				class="mx-2 navigation-button"
-				icon
-			>
-				<v-icon icon="mdi-chevron-left" size="48"></v-icon>
-			</v-btn>
+			<!-- Moon Phase Name -->
+			<h1 class="text-h5 font-weight-bold">
+				{{ moonStore.phaseName || '&nbsp;' }}
+			</h1>
 
-			<MoonImage />
+			<!-- Moon Image -->
+			<div class="d-flex align-center justify-center moon-image-container">
+				<!-- Previous Button -->
+				<v-btn
+					color="primary"
+					variant="text"
+					@click="changeDate(-1)"
+					:disabled="loading"
+					class="mx-2 navigation-button"
+					icon
+				>
+					<v-icon icon="mdi-chevron-left" size="48"></v-icon>
+				</v-btn>
 
-			<!-- Next Button -->
-			<v-btn
-				color="primary"
-				variant="text"
-				@click="changeDate(1)"
-				:disabled="loading"
-				class="mx-2 navigation-button"
-				icon
-			>
-				<v-icon icon="mdi-chevron-right" size="48"></v-icon>
-			</v-btn>
+				<MoonImage />
+
+				<!-- Next Button -->
+				<v-btn
+					color="primary"
+					variant="text"
+					@click="changeDate(1)"
+					:disabled="loading"
+					class="mx-2 navigation-button"
+					icon
+				>
+					<v-icon icon="mdi-chevron-right" size="48"></v-icon>
+				</v-btn>
+			</div>
 		</div>
 
 		<!-- Moon Information Grid -->
-		<v-container class="bottom-info">
-			<div class="d-flex align-center justify-center">
-				<!-- <v-icon small icon="mdi-map-marker"></v-icon>
-			<span class="text-subtitle-2">{{ moonStore.location.name }}</span> -->
-				<LocationPicker></LocationPicker>
+		<v-container class="bottom-content">
+
+			<!-- Time Slider -->
+			<div v-if="showTimeSlider">
+				<TimeSlider v-model="currentHour" />
 			</div>
-			<p class="text-caption text-center mt-2 d-flex align-center justify-center">
+
+			<!-- Date and Time Buttons -->
+			<p class="text-caption text-center d-flex align-center justify-center">
+				<v-btn
+					icon
+					variant="text"
+					size="small"
+					@click="goToToday"
+					title="Go to today"
+					color="primary"
+				>
+					<v-icon>mdi-calendar-blank</v-icon>
+				</v-btn>
 				<v-btn
 					icon
 					variant="text"
@@ -64,73 +81,7 @@
 				</v-btn>
 			</p>
 
-			<!-- Time Slider -->
-			<div v-if="showTimeSlider">
-				<TimeSlider v-model="currentHour" />
-			</div>
-			<!-- Moon Information (shown when calendar is closed) -->
-			<v-card v-if="!showCalendar" variant="outlined" class="mt-2">
-				<v-card-title class="text-h6 text-center my-2">
-					Moon Information
-				</v-card-title>
-				<v-card-text class="pb-1">
-					<v-row dense>
-						<v-col cols="6" class="text-right pr-2">
-							<div class="mb-1 text-grey-lighten-1">Illumination:</div>
-							<div class="mb-1 text-grey-lighten-1">Moon Age:</div>
-							<div class="mb-1 text-grey-lighten-1">Distance:</div>
-							<div class="mb-1 text-grey-lighten-1">Moonrise:</div>
-							<div class="text-grey-lighten-1">Moonset:</div>
-						</v-col>
-						<v-col cols="6" class="text-left pl-2">
-							<div class="mb-1 font-weight-bold">
-								{{
-									moonStore.illumination ? moonStore.illumination.toFixed(1) + '%' : '--'
-								}}
-							</div>
-							<div class="mb-1 font-weight-bold">
-								{{ moonStore.ageOfMoon ? moonStore.ageOfMoon + ' days' : '--' }}
-							</div>
-							<div class="mb-1 font-weight-bold">
-								{{
-									moonStore.distance
-										? Math.round(moonStore.distance).toLocaleString() + ' km'
-										: '--'
-								}}
-							</div>
-							<div class="mb-1 font-weight-bold">
-								{{
-									moonStore.moonTimes?.rise ? formatTime(moonStore.moonTimes.rise) : '--'
-								}}
-							</div>
-							<div class="font-weight-bold">
-								{{
-									moonStore.moonTimes?.set ? formatTime(moonStore.moonTimes.set) : '--'
-								}}
-							</div>
-						</v-col>
-					</v-row>
-				</v-card-text>
-				<!--v-divider class="mb-1 mt-1"></!--v-divider-->
-				<v-card-title class="text-h6 text-center mb-2">Moon Events</v-card-title>
-				<v-card-text>
-					<v-row dense>
-						<v-col cols="6" class="text-right pr-2">
-							<div class="mb-1 text-grey-lighten-1">Next Full Moon:</div>
-							<div class="mb-1 text-grey-lighten-1">Next New Moon:</div>
-						</v-col>
-						<v-col cols="6" class="text-left pl-2">
-							<div class="mb-1 font-weight-bold">
-								{{ moonStore.nextFullMoon ? formatDate(moonStore.nextFullMoon) : '--' }}
-							</div>
-							<div class="mb-1 font-weight-bold">
-								{{ moonStore.nextNewMoon ? formatDate(moonStore.nextNewMoon) : '--' }}
-							</div>
-						</v-col>
-					</v-row>
-				</v-card-text>
-			</v-card>
-
+			<MoonInformation v-if="!showCalendar" />
 			<!-- Calendar (shown when calendar is open) -->
 			<v-card v-else variant="outlined" class="mt-2">
 				<MoonCalendar @close="showCalendar = false" />
@@ -148,19 +99,14 @@
 </template>
 
 <script setup lang="ts">
-	import { ref, onMounted, watch } from 'vue';
+	import { ref, onMounted, watch, provide } from 'vue';
 	import { useMoonStore } from '@/store/moon';
 	import MoonImage from './MoonImage.vue';
 	import LocationPicker from './LocationPicker.vue';
 	import MoonCalendar from './MoonCalendar.vue';
-	import SvgIcon from './MdiIcon.vue';
 	import TimeSlider from './TimeSlider.vue';
-	import { format } from 'date-fns';
-	import { mdiWeatherMoonsetUp, mdiWeatherMoonsetDown } from '@mdi/js';
+	import MoonInformation from './MoonInformation.vue';
 
-	// Debug: Check if the icons have valid path data
-	console.log('mdiWeatherMoonsetUp:', mdiWeatherMoonsetUp);
-	console.log('mdiWeatherMoonsetDown:', mdiWeatherMoonsetDown);
 	const moonStore = useMoonStore();
 	const loading = ref(false);
 
@@ -168,15 +114,8 @@
 	const showTimeSlider = ref(false);
 	const currentHour = ref(new Date().getHours());
 
-	// Format time for display
-	const formatTime = (date: Date | null) => {
-		if (!date) return '--:--';
-		return date.toLocaleTimeString('en-US', {
-			hour: '2-digit',
-			minute: '2-digit',
-			hour12: true
-		});
-	};
+	// Provide showCalendar to child components
+	provide('showCalendar', showCalendar);
 
 	const changeDate = async (days: number) => {
 		try {
@@ -203,9 +142,26 @@
 		}
 	};
 
-	// Format date for display
-	const formatDate = (date: Date) => {
-		return format(date, 'MMM d, yyyy');
+	const goToToday = async () => {
+		try {
+			loading.value = true;
+			const today = new Date();
+			
+			// // Update the hour if we're using the time slider
+			// if (showTimeSlider.value) {
+			// 	today.setHours(currentHour.value, 0, 0, 0);
+			// }
+			
+			// Use setCurrentDate to update the date and fetch moon phase
+			await moonStore.setCurrentDate(today);
+			
+			// // Close calendar if it's open
+			// showCalendar.value = false;
+		} catch (error) {
+			console.error('Error going to today:', error);
+		} finally {
+			loading.value = false;
+		}
 	};
 
 	// Watch for date changes to reset the hour
@@ -267,117 +223,34 @@
 		padding: 0 !important;
 	}
 
-	/* Moon Loading Animation */
-	.moon-loading-animation {
-		width: 100%;
-		height: 100%;
-		max-width: 500px;
-		max-height: 500px;
-		margin: 0 auto;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		position: relative;
-		min-height: 70vw; /* Match the mobile size */
-	}
-
-	@media (min-width: 640px) {
-		.moon-loading-animation {
-			width: 500px;
-			height: 500px;
-			min-height: auto;
-		}
-	}
-
-	.moon-loading-circle {
-		width: 100px;
-		height: 100px;
-		border: 4px solid rgba(255, 255, 255, 0.1);
-		border-radius: 50%;
-		border-top-color: #e6d595ff;
-		animation: spin 1s ease-in-out infinite;
-		position: relative;
-	}
-
-	.moon-loading-circle::before {
-		content: '';
-		position: absolute;
-		top: -4px;
-		left: -4px;
-		right: -4px;
-		bottom: -4px;
-		border: 4px solid transparent;
-		border-radius: 50%;
-		border-top-color: #e6d595ff;
-		animation: spin 1.5s ease-in-out infinite;
-		animation-delay: 0.2s;
-	}
-
-	.moon-loading-text {
-		margin-top: 20px;
-		color: #b0bec5;
-		font-size: 1.1rem;
-		opacity: 0.8;
-		animation: pulse 2s ease-in-out infinite;
-	}
-
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
-	@keyframes pulse {
-		0%,
-		100% {
-			opacity: 0.8;
-		}
-		50% {
-			opacity: 0.5;
-		}
-	}
-
 	/* Moon Phase Name */
-	.moon-phase-name {
-		font-size: 2rem;
-		font-weight: 500;
-		letter-spacing: 1px;
-		margin: 0 0 1rem 0;
-		text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-		position: relative;
-		padding-bottom: 0.5rem;
-	}
-
-	.v-picker--date .v-date-picker-table--date th {
-		padding: 4px 0;
-	}
-
-	.v-picker--date .v-date-picker-table--date th,
-	.v-picker--date .v-date-picker-table--date td {
-		width: 36px;
-		height: 36px;
-	}
-
-	.v-picker--date .v-date-picker-table--date .v-btn {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-
 	.main-container {
 		height: 100%;
 		box-sizing: border-box;
-		padding: 20px 0;
+		padding: 16px 0;
 		justify-content: space-between;
 	}
 
 	.moon-image-container {
-		width: calc(100% + 40px);
+		width: calc(100% + 32px);
+	}
+	.top-content {
+		padding: 0;
+		width: 100%;
+	}
+	.bottom-content {
+		padding: 0;
+		width: 100%;
 		flex-grow: 1;
 		flex-shrink: 1;
 	}
-	.bottom-info {
-		padding: 0;
+
+	@media (min-height: 800px) {
+		.main-container {
+			padding: 20px 0;
+		}
+		.moon-image-container {
+			width: calc(100% + 40px);
+		}
 	}
 </style>
